@@ -114,6 +114,7 @@ colors = \
     '#00E0E0',
     '#E0E0E0']
 
+txt = None
 
 
 def plot_stats(stats, all_processes):
@@ -125,7 +126,6 @@ def plot_stats(stats, all_processes):
         procs.append((proc_name, [float(s[1][proc_name]) for s in stats]))
 
     sorted_processes = [y for (x, y) in sorted(zip(procs, all_processes), key=lambda (x, y): sum(x[1]), reverse=True)]
-    txt = None
 
     def onpick3(event):
         global txt
@@ -133,13 +133,10 @@ def plot_stats(stats, all_processes):
         label = thisline.get_label()
         proc_index = int(label[11:])
         process = sorted_processes[proc_index]
+        if txt:
+            txt.remove()
         txt = ax.text(event.mouseevent.xdata, event.mouseevent.ydata, process, style='italic',
         bbox={'facecolor':'red', 'alpha':1, 'pad':10})
-        event.canvas.draw()
-
-    def onrelease3(event):
-        global txt
-        txt.remove()
         event.canvas.draw()
 
     procs.sort(key=lambda x: sum(x[1]), reverse=True)
@@ -150,7 +147,6 @@ def plot_stats(stats, all_processes):
     ax = fig.add_subplot(111)
     ax.stackplot(uptime_arr, procs, picker=True)
     fig.canvas.mpl_connect('pick_event', onpick3)
-    fig.canvas.mpl_connect('button_release_event', onrelease3)
 
     plt.xlabel('Uptime, minutes')
     plt.ylabel('Memory usage, KB')
