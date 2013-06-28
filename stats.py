@@ -114,39 +114,42 @@ colors = \
     '#00E0E0',
     '#E0E0E0']
 
-txt = None
+tooltip = None
 
 
 def plot_stats(stats, all_processes):
     uptime_arr = np.array([s[0] for s in stats], float)
+    # convert to minutes
     uptime_arr = uptime_arr/60000
     procs = []
 
     for proc_name in all_processes:
         procs.append((proc_name, [float(s[1][proc_name]) for s in stats]))
 
-    sorted_processes = [y for (x, y) in sorted(zip(procs, all_processes), key=lambda (x, y): sum(x[1]), reverse=True)]
+    # sort process names list depending on total memory usage
+    procs, sorted_processes = zip(*[(x, y) for (x, y) in sorted(zip(procs, all_processes), key=lambda (x, y): sum(x[1]), reverse=True)])
 
-    def onpick3(event):
-        global txt
+    def onpick(event):
+        global tooltip
         thisline = event.artist
+
+        # get process index depending on label number
         label = thisline.get_label()
         proc_index = int(label[11:])
+
         process = sorted_processes[proc_index]
-        if txt:
-            txt.remove()
-        txt = ax.text(event.mouseevent.xdata, event.mouseevent.ydata, process, style='italic',
+        if tooltip:
+            tooltip.remove()
+        tooltip = ax.text(event.mouseevent.xdata, event.mouseevent.ydata, process, style='italic',
         bbox={'facecolor':'red', 'alpha':1, 'pad':10})
         event.canvas.draw()
-
-    procs.sort(key=lambda x: sum(x[1]), reverse=True)
 
     procs = np.array([pr[1] for pr in procs])
 
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
     ax.stackplot(uptime_arr, procs, picker=True)
-    fig.canvas.mpl_connect('pick_event', onpick3)
+    fig.canvas.mpl_connect('pick_event', onpick)
 
     plt.xlabel('Uptime, minutes')
     plt.ylabel('Memory usage, KB')
