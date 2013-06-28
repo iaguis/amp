@@ -7,6 +7,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
+colors = ['#FF0001',
+          '#BF3030',
+          '#A60000',
+          '#FF4040',
+          '#FF7373',
+          '#FF7400',
+          '#BF7130',
+          '#A64B00',
+          '#FF9640',
+          '#FFB273',
+          '#CD0074',
+          '#992667',
+          '#85004B',
+          '#E6399B',
+          '#E667AF',
+          '#00CC00',
+          '#269926',
+          '#008500',
+          '#39E639',
+          '#67E667']
 
 tooltip = None
 
@@ -65,63 +85,6 @@ def fix_stats(stats):
             if not p in el[1].keys():
                 el[1][p] = 0
 
-colors = \
-    ['#FF0000',
-    '#00FF00',
-    '#0000FF',
-    '#FFFF00',
-    '#FF00FF',
-    '#00FFFF',
-    '#000000',
-    '#800000',
-    '#008000',
-    '#000080',
-    '#808000',
-    '#800080',
-    '#008080',
-    '#808080',
-    '#C00000',
-    '#00C000',
-    '#0000C0',
-    '#C0C000',
-    '#C000C0',
-    '#00C0C0',
-    '#C0C0C0',
-    '#400000',
-    '#004000',
-    '#000040',
-    '#404000',
-    '#400040',
-    '#004040',
-    '#404040',
-    '#200000',
-    '#002000',
-    '#000020',
-    '#202000',
-    '#200020',
-    '#002020',
-    '#202020',
-    '#600000',
-    '#006000',
-    '#000060',
-    '#606000',
-    '#600060',
-    '#006060',
-    '#606060',
-    '#A00000',
-    '#00A000',
-    '#0000A0',
-    '#A0A000',
-    '#A000A0',
-    '#00A0A0',
-    '#A0A0A0',
-    '#E00000',
-    '#00E000',
-    '#0000E0',
-    '#E0E000',
-    '#E000E0',
-    '#00E0E0',
-    '#E0E0E0']
 def plot_stats(stats, all_processes):
     uptime_arr = np.array([s[0] for s in stats], float)
     # convert to minutes
@@ -149,14 +112,23 @@ def plot_stats(stats, all_processes):
             tooltip.remove()
         tooltip = ax.text(event.mouseevent.xdata, event.mouseevent.ydata, process, style='italic',
 
-        bbox={'facecolor':'red', 'alpha':1, 'pad':10})
+        bbox={'facecolor':'yellow', 'alpha':1, 'pad':10})
         event.canvas.draw()
 
     procs = np.array([pr[1] for pr in procs])
 
+    colormap = colors[:len(procs)]
+
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
-    ax.stackplot(uptime_arr, procs, picker=True)
+
+    # remove black borders
+    ax.xaxis.set_ticks([])
+    ax.yaxis.set_ticks([])
+    for spine in ax.spines.itervalues():
+        spine.set_visible(False)
+
+    ax.stackplot(uptime_arr, procs, colors=colormap, picker=True, edgecolor = "none")
     fig.canvas.mpl_connect('pick_event', onpick)
 
     plt.xlabel('Uptime, minutes')
