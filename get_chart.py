@@ -159,7 +159,7 @@ def plot_stats(stats, all_processes):
 
 if __name__=="__main__":
     if len(sys.argv) != 2:
-        print "Usage: stats.py log-directory"
+        print "Usage: get_chart.py log-directory"
         exit(0)
 
     stats = get_stats(sys.argv[1])
