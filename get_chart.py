@@ -7,7 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
+
+tooltip = None
+
 def get_processes(file_name):
+    """get processes at a time"""
     f = open(file_name)
     content = f.read()
     process_list =  list(set(re.findall(r"kB: ((?:(?:\w+)\.?)+) \(", content)))
@@ -15,6 +19,7 @@ def get_processes(file_name):
     return process_list
 
 def get_mem_from_processes(processes, file_name):
+    """get memory usage for processes at a time"""
     f = open(file_name)
     content = f.read()
     stats = {}
@@ -28,6 +33,7 @@ def get_mem_from_processes(processes, file_name):
     return stats
 
 def get_uptime(file_name):
+    """get uptime at a time"""
     f = open(file_name)
     content = f.read()
     uptime = re.search(r"Uptime: (\d+)", content).group(1)
@@ -35,6 +41,7 @@ def get_uptime(file_name):
     return uptime
 
 def get_stats(directory):
+    """get stats from a log directory"""
     all_stats = []
 
     for f in glob.glob(directory + "/*.log"):
@@ -48,9 +55,11 @@ def get_stats(directory):
     return all_stats
 
 def get_all_processes(stats):
+    """get all the processes ever started"""
     return list(set(list(chain.from_iterable([s[1].keys() for s in stats]))))
 
 def fix_stats(stats):
+    """include processes not present at a time with memory usage = 0"""
     for el in stats:
         for p in get_all_processes(stats):
             if not p in el[1].keys():
@@ -113,10 +122,6 @@ colors = \
     '#E000E0',
     '#00E0E0',
     '#E0E0E0']
-
-tooltip = None
-
-
 def plot_stats(stats, all_processes):
     uptime_arr = np.array([s[0] for s in stats], float)
     # convert to minutes
@@ -126,7 +131,7 @@ def plot_stats(stats, all_processes):
     for proc_name in all_processes:
         procs.append((proc_name, [float(s[1][proc_name]) for s in stats]))
 
-    # sort process names list depending on total memory usage
+    # sort depending on total memory usage
     procs, sorted_processes = zip(*[(x, y) for (x, y) in sorted(zip(procs, all_processes), key=lambda (x, y): sum(x[1]), reverse=True)])
 
     def onpick(event):
@@ -137,10 +142,13 @@ def plot_stats(stats, all_processes):
         label = thisline.get_label()
         proc_index = int(label[11:])
 
+        # selected process
         process = sorted_processes[proc_index]
+
         if tooltip:
             tooltip.remove()
         tooltip = ax.text(event.mouseevent.xdata, event.mouseevent.ydata, process, style='italic',
+
         bbox={'facecolor':'red', 'alpha':1, 'pad':10})
         event.canvas.draw()
 
