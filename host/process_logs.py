@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__author__ = "Iago López Galeiras"
 
 import glob
 import re
