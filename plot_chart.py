@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-import glob
-import re
-from itertools import chain
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+from itertools import chain
 
 colors = ['#FF0001',
           '#BF3030',
@@ -30,60 +28,36 @@ colors = ['#FF0001',
 
 tooltip = None
 
-def get_processes(file_name):
-    """get processes at a time"""
-    f = open(file_name)
-    content = f.read()
-    process_list =  list(set(re.findall(r"kB: ((?:(?:\w+)\.?)+) \(", content)))
+def get_stats_from_csv(filename):
+    f = open(filename)
+    stats = []
+    for l in f:
+        measurement = []
+        line = [x.strip() for x in l.split(',')]
+        measurement.append(line[0])
+        processes_dict = {}
+        for i in range(1,len(line)-1,2):
+            processes_dict[line[i]] = line[i+1]
+        measurement.append(processes_dict)
+        measurement = tuple(measurement)
+        stats.append(measurement)
+
     f.close()
-    return process_list
+    all_processes = get_all_processes(stats)
+    fix_stats(stats, all_processes)
+    stats.sort(key=lambda x: x[0])
+    return stats, all_processes
 
-def get_mem_from_processes(processes, file_name):
-    """get memory usage for processes at a time"""
-    f = open(file_name)
-    content = f.read()
-    stats = {}
-    for proc in processes:
-        search_string = "(\d+) kB: (" + proc + ")"
-        mem_proc = re.search(search_string, content)
-        mem = mem_proc.group(1)
-        proc = mem_proc.group(2)
-        stats[proc] = mem
-    f.close()
-    return stats
-
-def get_uptime(file_name):
-    """get uptime at a time"""
-    f = open(file_name)
-    content = f.read()
-    uptime = re.search(r"Uptime: (\d+)", content).group(1)
-    f.close()
-    return uptime
-
-def get_stats(directory):
-    """get stats from a log directory"""
-    all_stats = []
-
-    for f in glob.glob(directory + "/*.log"):
-        stats = get_mem_from_processes(get_processes(f), f)
-        uptime = get_uptime(f)
-        all_stats.append((uptime, stats))
-
-    fix_stats(all_stats)
-    all_stats.sort(key=lambda x: x[0])
-
-    return all_stats
+def fix_stats(stats, all_processes):
+    """include processes not present at a time with memory usage = 0"""
+    for el in stats:
+        for p in all_processes:
+            if not p in el[1].keys():
+                el[1][p] = 0
 
 def get_all_processes(stats):
     """get all the processes ever started"""
     return list(set(list(chain.from_iterable([s[1].keys() for s in stats]))))
-
-def fix_stats(stats):
-    """include processes not present at a time with memory usage = 0"""
-    for el in stats:
-        for p in get_all_processes(stats):
-            if not p in el[1].keys():
-                el[1][p] = 0
 
 def plot_stats(stats, all_processes):
     uptime_arr = np.array([s[0] for s in stats], float)
@@ -111,7 +85,6 @@ def plot_stats(stats, all_processes):
         if tooltip:
             tooltip.remove()
         tooltip = ax.text(event.mouseevent.xdata, event.mouseevent.ydata, process, style='italic',
-
         bbox={'facecolor':'yellow', 'alpha':1, 'pad':10})
         event.canvas.draw()
 
@@ -121,12 +94,6 @@ def plot_stats(stats, all_processes):
 
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
-
-    # remove black borders
-    ax.xaxis.set_ticks([])
-    ax.yaxis.set_ticks([])
-    for spine in ax.spines.itervalues():
-        spine.set_visible(False)
 
     ax.stackplot(uptime_arr, procs, colors=colormap, picker=True, edgecolor = "none")
     fig.canvas.mpl_connect('pick_event', onpick)
@@ -139,9 +106,8 @@ def plot_stats(stats, all_processes):
 
 if __name__=="__main__":
     if len(sys.argv) != 2:
-        print "Usage: get_chart.py log-directory"
+        print "Usage: plot_chart.py stats_file.csv"
         exit(0)
 
-    stats = get_stats(sys.argv[1])
-    processes = get_all_processes(stats)
-    plot_stats(stats, processes)
+    stats, all_processes = get_stats_from_csv(sys.argv[1])
+    plot_stats(stats, all_processes)
