@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""process_logs.py process memory usage data generated in target so that
+plot_chart.py can generate a memory usage over time chart"""
+
 __author__ = "Iago López Galeiras"
 
 import glob
