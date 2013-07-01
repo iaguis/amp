@@ -3,6 +3,10 @@ Android Memory Plotter
 
 Android Memory Plotter (AMP) collects memory usage info from an Android device and generates a stack plot of memory usage vs. uptime of all Android processes running allowing to see graphically how memory usage of each process changes while using the device.
 
+Inspired by:
+
+http://heap-of-notes.blogspot.de/2013/05/investigation-of-android-apps-memory.html
+
 Dependencies
 ------------
 
