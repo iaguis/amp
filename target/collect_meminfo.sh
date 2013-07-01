@@ -10,6 +10,7 @@ do
   FNAME=`date +%F_%H-%M-%S`
   touch "$FNAME".log
   dumpsys meminfo > "$FNAME".log;
+  cat /proc/meminfo | grep MemFree >> "$FNAME".log;
   sleep 1
   I=$(expr $I + 1)
 done

@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 import sys
 from itertools import chain
 
-colors = ['#FF0001',
+colors = ['#FEF1B5',
+          '#FF0001',
           '#BF3030',
           '#A60000',
           '#FF4040',

@@ -29,6 +29,8 @@ def get_mem_from_processes(processes, file_name):
         mem = mem_proc.group(1)
         proc = mem_proc.group(2)
         stats[proc] = mem
+    free_mem = re.search("MemFree:[ \t]+(\d+) kB", content).group(1)
+    stats["Free"] = free_mem
     f.close()
     return stats
 
