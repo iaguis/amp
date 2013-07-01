@@ -7,6 +7,11 @@ Inspired by:
 
 http://heap-of-notes.blogspot.de/2013/05/investigation-of-android-apps-memory.html
 
+Screenshot
+----------
+
+![sample screenshot](https://raw.github.com/iaguis/amp/master/screenshots/sample.png)
+
 Dependencies
 ------------
 
