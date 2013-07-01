@@ -112,7 +112,7 @@ def plot_stats(stats, all_processes):
 
 if __name__=="__main__":
     if len(sys.argv) != 2:
-        print "Usage: plot_chart.py stats_file.csv"
+        print "Usage: plot_chart.py data_file.csv"
         exit(0)
 
     stats, all_processes = get_stats_from_csv(sys.argv[1])
