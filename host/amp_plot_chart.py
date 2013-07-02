@@ -30,9 +30,12 @@ colors = ['#FF0001',
           '#269926',
           '#008500',
           '#39E639',
-          '#67E667']
+          '#67E667',
+          '#E5C567']
 
-light_color = '#FEF1B5'
+free_color = '#E7FEB5'
+cached_color = '#FECDB5'
+buffers_color = '#FEF1B5'
 
 tooltip = None
 
@@ -86,6 +89,7 @@ def plot_stats(stats, all_processes):
     procs.sort(key=lambda (x, y): sum(y), reverse=True)
 
     inactive_mem = [x for x in procs if x[0] in ["Free", "Buffers", "Cached"]]
+    inactive_mem.sort(key=lambda x: x[0])
     procs = [x for x in procs if not x[0] in ["Free", "Buffers", "Cached"]]
     procs = procs + inactive_mem
 
@@ -109,7 +113,9 @@ def plot_stats(stats, all_processes):
     procs_mem_array = np.array([pr[1] for pr in procs])
 
     colormap = colors
-    colormap[(len(procs)-1) % len(colormap)] = light_color
+    colormap[(len(procs)-1) % len(colormap)] = free_color
+    colormap[(len(procs)-2) % len(colormap)] = cached_color
+    colormap[(len(procs)-3) % len(colormap)] = buffers_color
 
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
