@@ -76,6 +76,7 @@ def plot_stats(stats, all_processes):
     uptime_arr = np.array([s[0] for s in stats], float)
     # convert to minutes
     uptime_arr = uptime_arr/60000
+    uptime_arr.sort()
     procs = []
 
     for proc_name in all_processes:
