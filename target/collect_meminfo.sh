@@ -11,6 +11,8 @@ do
   touch "$FNAME".log
   dumpsys meminfo > "$FNAME".log;
   cat /proc/meminfo | grep MemFree >> "$FNAME".log;
+  cat /proc/meminfo | grep Buffers >> "$FNAME".log;
+  cat /proc/meminfo | grep Cached | grep -v Swap >> "$FNAME".log;
   sleep 1
   I=$(expr $I + 1)
 done

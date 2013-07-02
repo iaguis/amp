@@ -30,7 +30,11 @@ def get_mem_from_processes(processes, file_name):
         proc = mem_proc.group(2)
         stats[proc] = mem
     free_mem = re.search("MemFree:[ \t]+(\d+) kB", content).group(1)
+    buffers_mem = re.search("Buffers:[ \t]+(\d+) kB", content).group(1)
+    cached_mem = re.search("Cached:[ \t]+(\d+) kB", content).group(1)
     stats["Free"] = free_mem
+    stats["Buffers"] = buffers_mem
+    stats["Cached"] = cached_mem
     f.close()
     return stats
 

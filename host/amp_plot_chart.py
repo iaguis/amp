@@ -85,13 +85,9 @@ def plot_stats(stats, all_processes):
     # sort depending on total memory usage
     procs.sort(key=lambda (x, y): sum(y), reverse=True)
 
-    free_idx = 0
-    for el in procs:
-        if el[0] == "Free":
-            break
-
-    # put "Free" memory on the top
-    swap(procs, free_idx, len(procs)-1)
+    inactive_mem = [x for x in procs if x[0] in ["Free", "Buffers", "Cached"]]
+    procs = [x for x in procs if not x[0] in ["Free", "Buffers", "Cached"]]
+    procs = procs + inactive_mem
 
     def onpick(event):
         global tooltip
