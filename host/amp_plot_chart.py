@@ -76,7 +76,7 @@ def plot_stats(stats, all_processes):
         procs.append((proc_name, [float(s[1][proc_name]) for s in stats]))
 
     # sort depending on total memory usage
-    procs, sorted_processes = zip(*[(x, y) for (x, y) in sorted(zip(procs, all_processes), key=lambda (x, y): sum(x[1]), reverse=True)])
+    procs.sort(key=lambda(x, y): sum(y), reverse=True)
 
     def onpick(event):
         global tooltip
@@ -86,8 +86,8 @@ def plot_stats(stats, all_processes):
         label = thisline.get_label()
         proc_index = int(label[11:])
 
-        # selected process
-        process = sorted_processes[proc_index]
+        # selected process name
+        process = procs[proc_index][0]
 
         if tooltip:
             tooltip.remove()
@@ -95,14 +95,14 @@ def plot_stats(stats, all_processes):
         bbox={'facecolor':'yellow', 'alpha':1, 'pad':10})
         event.canvas.draw()
 
-    procs = np.array([pr[1] for pr in procs])
+    procs_mem_array = np.array([pr[1] for pr in procs])
 
     colormap = colors[:len(procs)]
 
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
 
-    ax.stackplot(uptime_arr, procs, colors=colormap, picker=True, edgecolor = "none")
+    ax.stackplot(uptime_arr, procs_mem_array, colors=colormap, picker=True, edgecolor = "none")
     fig.canvas.mpl_connect('pick_event', onpick)
 
     plt.xlabel('Uptime, minutes')
