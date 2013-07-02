@@ -11,8 +11,7 @@ import matplotlib.pyplot as plt
 import sys
 from itertools import chain
 
-colors = ['#FEF1B5',
-          '#FF0001',
+colors = ['#FF0001',
           '#BF3030',
           '#A60000',
           '#FF4040',
@@ -32,6 +31,8 @@ colors = ['#FEF1B5',
           '#008500',
           '#39E639',
           '#67E667']
+
+light_color = '#FEF1B5'
 
 tooltip = None
 
@@ -66,6 +67,11 @@ def get_all_processes(stats):
     """get all the processes ever started"""
     return list(set(list(chain.from_iterable([s[1].keys() for s in stats]))))
 
+def swap(l, p1, p2):
+    tmp = l[p1]
+    l[p1] = l[p2]
+    l[p2] = tmp
+
 def plot_stats(stats, all_processes):
     uptime_arr = np.array([s[0] for s in stats], float)
     # convert to minutes
@@ -76,7 +82,15 @@ def plot_stats(stats, all_processes):
         procs.append((proc_name, [float(s[1][proc_name]) for s in stats]))
 
     # sort depending on total memory usage
-    procs.sort(key=lambda(x, y): sum(y), reverse=True)
+    procs.sort(key=lambda (x, y): sum(y), reverse=True)
+
+    free_idx = 0
+    for el in procs:
+        if el[0] == "Free":
+            break
+
+    # put "Free" memory on the top
+    swap(procs, free_idx, len(procs)-1)
 
     def onpick(event):
         global tooltip
@@ -97,7 +111,8 @@ def plot_stats(stats, all_processes):
 
     procs_mem_array = np.array([pr[1] for pr in procs])
 
-    colormap = colors[:len(procs)]
+    colormap = colors
+    colormap[(len(procs)-1) % len(colormap)] = light_color
 
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
