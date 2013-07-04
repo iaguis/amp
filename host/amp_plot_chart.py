@@ -8,6 +8,8 @@ __author__ = "Iago López Galeiras"
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
+from datetime import datetime
 import sys
 from itertools import chain
 
@@ -76,10 +78,9 @@ def swap(l, p1, p2):
     l[p2] = tmp
 
 def plot_stats(stats, all_processes):
-    uptime_arr = np.array([s[0] for s in stats], float)
-    # convert to minutes
-    uptime_arr = uptime_arr/60000
-    uptime_arr.sort()
+    date_list = np.array([datetime.strptime(s[0], "%d%m%y%H%M%S") for s in stats])
+    date_arr = matplotlib.dates.date2num(date_list)
+    date_arr.sort()
     procs = []
 
     for proc_name in all_processes:
@@ -88,9 +89,9 @@ def plot_stats(stats, all_processes):
     # sort depending on total memory usage
     procs.sort(key=lambda (x, y): sum(y), reverse=True)
 
-    inactive_mem = [x for x in procs if x[0] in ["Free", "Buffers", "Cached"]]
+    inactive_mem = [x for x in procs if x[0] in ["Free", "Buffers", "Cached", "Slab", "Shmem", "Unknown"]]
     inactive_mem.sort(key=lambda x: x[0])
-    procs = [x for x in procs if not x[0] in ["Free", "Buffers", "Cached"]]
+    procs = [x for x in procs if not x[0] in ["Free", "Buffers", "Cached", "Slab", "Shmem", "Unknown"]]
     procs = procs + inactive_mem
 
     def onpick(event):
@@ -120,12 +121,12 @@ def plot_stats(stats, all_processes):
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
 
-    ax.stackplot(uptime_arr, procs_mem_array, colors=colormap, picker=True, edgecolor = "none")
+    ax.stackplot(date_arr, procs_mem_array, colors=colormap, picker=True, edgecolor = "none")
     fig.canvas.mpl_connect('pick_event', onpick)
 
-    plt.xlabel('Uptime, minutes')
+    plt.xlabel('Time, minutes')
     plt.ylabel('Memory usage, KB')
-    plt.title('Memory usage vs Uptime')
+    plt.title('Memory usage vs Time')
 
     plt.show()
 
