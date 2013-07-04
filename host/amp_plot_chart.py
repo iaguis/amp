@@ -35,6 +35,9 @@ colors = ['#FF0001',
           '#67E667',
           '#E5C567']
 
+unknown_color = "#F1B5FE"
+slab_color = "#B5C3FE"
+shmem_color = "#CCB5FE"
 free_color = '#E7FEB5'
 cached_color = '#FECDB5'
 buffers_color = '#FEF1B5'
@@ -114,9 +117,12 @@ def plot_stats(stats, all_processes):
     procs_mem_array = np.array([pr[1] for pr in procs])
 
     colormap = colors
-    colormap[(len(procs)-1) % len(colormap)] = free_color
-    colormap[(len(procs)-2) % len(colormap)] = cached_color
-    colormap[(len(procs)-3) % len(colormap)] = buffers_color
+    colormap[(len(procs)-1) % len(colormap)] = unknown_color
+    colormap[(len(procs)-2) % len(colormap)] = slab_color
+    colormap[(len(procs)-3) % len(colormap)] = shmem_color
+    colormap[(len(procs)-4) % len(colormap)] = free_color
+    colormap[(len(procs)-5) % len(colormap)] = cached_color
+    colormap[(len(procs)-6) % len(colormap)] = buffers_color
 
     fig = plt.figure(figsize=(1,1), dpi=80)
     ax = fig.add_subplot(111)
