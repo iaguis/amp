@@ -81,9 +81,9 @@ def swap(l, p1, p2):
     l[p2] = tmp
 
 def plot_stats(stats, all_processes):
-    date_list = np.array([datetime.strptime(s[0], "%d%m%y%H%M%S") for s in stats])
-    date_arr = matplotlib.dates.date2num(date_list)
-    date_arr.sort()
+    date_list = [datetime.strptime(s[0], "%d%m%y%H%M%S") for s in stats]
+    date_list.sort()
+    date_arr = np.array(date_list)
     procs = []
 
     for proc_name in all_processes:
@@ -130,7 +130,7 @@ def plot_stats(stats, all_processes):
     ax.stackplot(date_arr, procs_mem_array, colors=colormap, picker=True, edgecolor = "none")
     fig.canvas.mpl_connect('pick_event', onpick)
 
-    plt.xlabel('Time, minutes')
+    plt.xlabel('Time')
     plt.ylabel('Memory usage, KB')
     plt.title('Memory usage vs Time')
 
