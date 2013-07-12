@@ -1,7 +1,10 @@
 Android Memory Plotter
 ======================
 
-Android Memory Plotter (AMP) collects memory usage info from an Android device and generates a stack plot of memory usage vs. uptime of all Android processes running allowing to see graphically how memory usage of each process changes while using the device.
+Android Memory Plotter (AMP) collects memory usage info from an Android device
+and generates a stack plot of memory usage vs. uptime of all Android processes
+running allowing to see graphically how memory usage of each process changes
+while using the device.
 
 Inspired by:
 
@@ -20,6 +23,13 @@ Dependencies
 - Numpy
 - Android SDK
 
+It was found that in some setups matplotlib didn't show anything. The problem
+was solved by adding to the file ~/.matplotlib/matplotlibrc the line:
+
+backend : Qt4Agg
+
+Reference: http://stackoverflow.com/a/7534680
+
 Utilities
 ---------
 
@@ -29,7 +39,8 @@ Utilities
 
 * amp_get_logs.sh measure_name output_dir
 
-    * Gets the memory usage logs identified by "measure_name" from the device to "output_dir"
+    * Gets the memory usage logs identified by "measure_name" from the device to
+      "output_dir"
 
 * amp_clean_logs.sh
 
@@ -43,3 +54,9 @@ Utilities
 
     * Plots memory usage from a csv file
 
+Bugs:
+-----
+
+* If you start measuring logs and the measurement gets interrupted before
+  finishing there's the possibility that the last measurement retrieved with
+  amp_get_logs is empty which causes a crash. As a workaround you can just delete it.
