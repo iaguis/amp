@@ -10,19 +10,14 @@ import glob
 import re
 import sys
 
-def get_processes(file_name):
+def get_processes(content):
     """get processes at a time"""
-    f = open(file_name)
-    content = f.read()
     get_procs_str = "\d+[ \t]+\d+K[ \t]+\d+K[ \t]+\d+K[ \t]+\d+K[ \t]+((?:[/]?(?:\w+)[/]?\.?)+)"
     process_list = list(set(re.findall(get_procs_str, content)))
-    f.close()
     return process_list
 
-def get_mem_from_processes(processes, file_name):
+def get_mem_from_processes(processes, content):
     """get memory usage for processes at a time"""
-    f = open(file_name)
-    content = f.read()
     stats = {}
     procs_mem = 0
     for proc in processes:
@@ -46,34 +41,38 @@ def get_mem_from_processes(processes, file_name):
     stats["Shmem"] = sh_mem
     stats["Unknown"] = int(total_mem) - int(free_mem) - procs_mem - int(buffers_mem) - \
     int(cached_mem) - int(sh_mem) - int(slab_mem)
-    f.close()
     return stats
 
-def get_date(file_name):
+def get_date(content):
     """get date at a time"""
-    f = open(file_name)
-    content = f.read()
     date = re.search(r"Date: (\d+)", content).group(1)
-    f.close()
     return date
 
 def process_logs(directory, output_file):
     out = open(output_file, "w")
 
     lines = []
-    for f in glob.glob(directory + "/*.log"):
-        stats = get_mem_from_processes(get_processes(f), f)
-        date = get_date(f)
-        line = str(date)
-        line += ","
-        for proc in stats.keys():
-            line += str(proc)
+    for fname in glob.glob(directory + "/*.log"):
+        f = open(fname)
+        content = f.read()
+        try:
+            stats = get_mem_from_processes(get_processes(content), content)
+            date = get_date(content)
+            line = str(date)
             line += ","
-            line += str(stats[proc])
-            line += ","
-        line = line[:-1]
-        line += "\n"
-        lines.append(line)
+            for proc in stats.keys():
+                line += str(proc)
+                line += ","
+                line += str(stats[proc])
+                line += ","
+            line = line[:-1]
+            line += "\n"
+            lines.append(line)
+        except AttributeError:
+            print "Bad syntax in file", fname
+            f.close()
+            continue
+        f.close()
     out.writelines(lines)
     out.close()
 
