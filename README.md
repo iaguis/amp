@@ -54,9 +54,3 @@ Utilities
 
     * Plots memory usage from a csv file
 
-Bugs:
------
-
-* If you start measuring logs and the measurement gets interrupted before
-  finishing there's the possibility that the last measurement retrieved with
-  amp_get_logs is empty which causes a crash. As a workaround you can just delete it.
