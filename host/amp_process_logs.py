@@ -12,7 +12,7 @@ import sys
 
 def get_processes(content):
     """get processes at a time"""
-    get_procs_str = "\d+[ \t]+\d+K[ \t]+\d+K[ \t]+\d+K[ \t]+\d+K[ \t]+((?:[/]?(?:\w+)[/]?\.?)+)"
+    get_procs_str = "\d+[ \t]+\d+K[ \t]+\d+K[ \t]+\d+K[ \t]+\d+K[ \t]+(.+)"
     process_list = list(set(re.findall(get_procs_str, content)))
     return process_list
 
