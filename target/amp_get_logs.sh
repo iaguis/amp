@@ -10,5 +10,4 @@ OUTPUT_DIR=$2
 
 ADB=adb
 
-mkdir -p ./$MEASUREMENT_DIR
 $ADB pull /data/debug/meminfo/$MEASUREMENT_NAME $OUTPUT_DIR

@@ -8,7 +8,6 @@ __author__ = "Iago López Galeiras"
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
 from datetime import datetime
 import sys
 from itertools import chain
@@ -74,11 +73,6 @@ def fix_stats(stats, all_processes):
 def get_all_processes(stats):
     """get all the processes ever started"""
     return list(set(list(chain.from_iterable([s[1].keys() for s in stats]))))
-
-def swap(l, p1, p2):
-    tmp = l[p1]
-    l[p1] = l[p2]
-    l[p2] = tmp
 
 def plot_stats(stats, all_processes):
     date_list = [datetime.strptime(s[0], "%d%m%y%H%M%S") for s in stats]
